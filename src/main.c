@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
@@ -77,21 +78,28 @@ void handle_input(GLFWwindow *window) {
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 
-	float *camera_position = glfwGetWindowUserPointer(window);
-	float camera_speed = 0.02f;
-	float move_vector[2] = {0.0f, 0.0f};
+	double* camera_position = glfwGetWindowUserPointer(window);
+	double camera_speed = 0.02;
+	double move_vector[] = {0.0, 0.0};
 
 	if(glfwGetKey(window, GLFW_KEY_W)) {
-		move_vector[1] += 1;
+		move_vector[1] += 1.0;
 	}
 	if(glfwGetKey(window, GLFW_KEY_A)) {
-		move_vector[0] -= 1;
+		move_vector[0] -= 1.0;
 	}
 	if(glfwGetKey(window, GLFW_KEY_S)) {
-		move_vector[1] -= 1;
+		move_vector[1] -= 1.0;
 	}
 	if(glfwGetKey(window, GLFW_KEY_D)) {
-		move_vector[0] += 1;
+		move_vector[0] += 1.0;
+	}
+
+	double move_magnitude = sqrt(move_vector[0]*move_vector[0] + move_vector[1]*move_vector[1]);
+
+	if(move_magnitude > 0) {
+		move_vector[0] *= camera_speed / move_magnitude;
+		move_vector[1] *= camera_speed / move_magnitude;
 	}
 
 	camera_position[0] += move_vector[0];
@@ -103,8 +111,6 @@ int main(int argc, char **argv) {
 	if(!glfwInit()) {
 		return -1;
 	}
-
-	Vector v;
 
 	GLFWwindow *window = create_window();
 	setup_glfw(window);
@@ -121,8 +127,10 @@ int main(int argc, char **argv) {
 	GLint resolution_location = glGetUniformLocation(shader_program, "resolution");
 	glUniform2f(resolution_location, 1920.0f, 1080.0f);
 
-	float time = 0.0f;
-	float camera_position[2] = {0.0f, 0.0f};
+	double time = 0.0;
+	double camera_position[2] = {0.0, 0.0};
+
+
 	glfwSetWindowUserPointer(window, camera_position);
 
 	while (!glfwWindowShouldClose(window)) {
@@ -131,7 +139,7 @@ int main(int argc, char **argv) {
 
 		GLint time_location = glGetUniformLocation(shader_program, "time");
 		glUniform1f(time_location, time);
-		time += 0.01f;
+		time += 0.01;
 
 		GLint camera_position_location = glGetUniformLocation(shader_program, "camera_position");
 		glUniform2f(camera_position_location, camera_position[0], camera_position[1]);

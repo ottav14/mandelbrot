@@ -1,15 +1,20 @@
 #include "vector.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 
 typedef double* Vector;
 
-double length(Vector v) {
+double vector_length(Vector v) {
+	double length = 0.0;
+	size_t size = sizeof(v)/sizeof(v[0]);
 
-	double vector_length = 0.0;
-		 
-	int vector_size = (int)v[0];
+	for(int i=0;i<size;i++) {
+		length += v[i] * v[i];
+	}
+	printf("%zu\n", size);
 
-	
-	return 0.0f;
+	length = sqrt(length);
 
+	return length;
 }

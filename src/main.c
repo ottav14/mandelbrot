@@ -72,16 +72,17 @@ void bind_vertex_buffer(GLuint *VAO) {
 
 }
 
-void handle_input(GLFWwindow *window) {
+void handle_input(GLFWwindow *window, double* camera_position, double* zoom) {
 
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 
-	double* camera_position = glfwGetWindowUserPointer(window);
 	double camera_speed = 0.02;
+	double zoom_speed = 1.01;
 	double move_vector[] = {0.0, 0.0};
 
+	// Camera movement
 	if(glfwGetKey(window, GLFW_KEY_W)) {
 		move_vector[1] += 1.0;
 	}
@@ -95,13 +96,23 @@ void handle_input(GLFWwindow *window) {
 		move_vector[0] += 1.0;
 	}
 
-	double move_magnitude = sqrt(move_vector[0]*move_vector[0] + move_vector[1]*move_vector[1]);
-
-	if(move_magnitude > 0) {
-		move_vector[0] *= camera_speed / move_magnitude;
-		move_vector[1] *= camera_speed / move_magnitude;
+	// Zoom
+	if(glfwGetKey(window, GLFW_KEY_UP)) {
+		*zoom /= zoom_speed;
+	}
+	if(glfwGetKey(window, GLFW_KEY_DOWN)) {
+		*zoom *= zoom_speed;
 	}
 
+
+	// Normalize move vector
+	double move_magnitude = sqrt(move_vector[0]*move_vector[0] + move_vector[1]*move_vector[1]);
+	if(move_magnitude > 0) {
+		move_vector[0] *= *zoom * camera_speed / move_magnitude;
+		move_vector[1] *= *zoom * camera_speed / move_magnitude;
+	}
+
+	// Update values
 	camera_position[0] += move_vector[0];
 	camera_position[1] += move_vector[1];
 }
@@ -127,15 +138,15 @@ int main(int argc, char **argv) {
 	GLint resolution_location = glGetUniformLocation(shader_program, "resolution");
 	glUniform2f(resolution_location, 1920.0f, 1080.0f);
 
+
+	double camera_position[] = {0.0, 0.0};
+	double zoom = 1.0;
 	double time = 0.0;
-	double camera_position[2] = {0.0, 0.0};
 
-
-	glfwSetWindowUserPointer(window, camera_position);
 
 	while (!glfwWindowShouldClose(window)) {
 
-		handle_input(window);
+		handle_input(window, camera_position, &zoom);
 
 		GLint time_location = glGetUniformLocation(shader_program, "time");
 		glUniform1f(time_location, time);
@@ -143,6 +154,9 @@ int main(int argc, char **argv) {
 
 		GLint camera_position_location = glGetUniformLocation(shader_program, "camera_position");
 		glUniform2f(camera_position_location, camera_position[0], camera_position[1]);
+
+		GLint zoom_location = glGetUniformLocation(shader_program, "zoom");
+		glUniform1f(zoom_location, zoom);
 
 		glBindVertexArray(VAO);
 

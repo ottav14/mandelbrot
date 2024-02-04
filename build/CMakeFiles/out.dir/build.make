@@ -128,6 +128,8 @@ out: /usr/lib/libglfw.so.3.3
 out: /usr/lib/libGLEW.so
 out: /usr/lib/libGL.so
 out: /usr/lib/libGLU.so
+out: /usr/lib/libgsl.so
+out: /usr/lib/libgslcblas.so
 out: CMakeFiles/out.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dom/projects/mandelbrot/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable out"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/out.dir/link.txt --verbose=$(VERBOSE)

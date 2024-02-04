@@ -5,12 +5,13 @@ out vec4 FragColor;
 
 uniform vec2 resolution;
 uniform vec2 camera_position;
+uniform float zoom;
 uniform float time;
 
 void main() {
 
-
-	vec2 c = 2.0 * gl_FragCoord.xy / resolution - 1.0 + camera_position;
+	vec2 uv = 2.0 * gl_FragCoord.xy / resolution - 1.0;
+	vec2 c = zoom * uv + camera_position;
 	vec2 z = vec2(c.x, c.y);
 	float k = 0.0;
 
